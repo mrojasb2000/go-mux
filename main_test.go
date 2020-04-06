@@ -8,7 +8,7 @@ import (
 
 var a App
 
-func TestMain(m *testing.T) {
+func TestMain(m *testing.M) {
 	a.Initialize(
 		os.Getenv("APP_DB_USERNAME"),
 		os.Getenv("APP_DB_USERNAME"),
@@ -17,7 +17,7 @@ func TestMain(m *testing.T) {
 	ensureTableExists()
 	code := m.Run()
 	clearTable()
-	os.Exist(code)
+	os.Exit(code)
 }
 
 func ensureTableExists() {
