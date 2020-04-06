@@ -57,19 +57,6 @@ func TestEmptyTable(t *testing.T) {
 	}
 }
 
-func executeRequest(req *http.Request) *httptest.ResponseRecorder {
-	rr := httptest.NewRecorder()
-	a.Router.ServeHTTP(rr, req)
-
-	return rr
-}
-
-func checkResponseCode(t *testing.T, expected, actual int) {
-	if expected != actual {
-		t.Errorf("Expected response code %d. Got %d\n", expected, actual)
-	}
-}
-
 func TestGetNonExistentProduct(t *testing.T) {
 	clearTable()
 
@@ -94,7 +81,7 @@ func TestCreateProduct(t *testing.T) {
 	req.Header.Set("Content-Type", "application/json")
 
 	response := executeRequest(req)
-	checkResponseCode(t, http.StatusCreated, response.Code)
+	checkResponseCode(t, http.StatusOK, response.Code)
 
 	var m map[string]interface{}
 	json.Unmarshal(response.Body.Bytes(), &m)
@@ -140,6 +127,7 @@ func TestUpdateProduct(t *testing.T) {
 
 	req, _ := http.NewRequest("GET", "/product/1", nil)
 	response := executeRequest(req)
+	checkResponseCode(t, http.StatusOK, response.Code)
 
 	var originalProduct map[string]interface{}
 	json.Unmarshal(response.Body.Bytes(), &originalProduct)
@@ -149,7 +137,6 @@ func TestUpdateProduct(t *testing.T) {
 	req.Header.Set("Content-Type", "application/json")
 
 	response = executeRequest(req)
-
 	checkResponseCode(t, http.StatusOK, response.Code)
 
 	var m map[string]interface{}
@@ -183,4 +170,17 @@ func TestDeleteProduct(t *testing.T) {
 	req, _ = http.NewRequest("GET", "/product/1", nil)
 	response = executeRequest(req)
 	checkResponseCode(t, http.StatusNotFound, response.Code)
+}
+
+func executeRequest(req *http.Request) *httptest.ResponseRecorder {
+	rr := httptest.NewRecorder()
+	a.Router.ServeHTTP(rr, req)
+
+	return rr
+}
+
+func checkResponseCode(t *testing.T, expected, actual int) {
+	if expected != actual {
+		t.Errorf("Expected response code %d. Got %d\n", expected, actual)
+	}
 }
